@@ -35,6 +35,7 @@ import torch.nn.functional as F
 import numpy as np
 
 convCount=0
+convList=[52,54,54,54,54,54,54,106,108,104,108,106,108,106,106,106,212,214,208,212,210,212,210,212,210,212,210,212,208,420,418,414,416,412,414,412]
 
 class BasicBlock(nn.Module):
     expansion = 1
@@ -109,19 +110,19 @@ class ResNet(nn.Module):
         self.index_info_conv = []
 
         self.in_planes = 64
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=3,
+        self.conv1 = nn.Conv2d(3, convList[convCount], kernel_size=3,
                                stride=1, padding=1, bias=False)
 
         global convCount
         convCount+=1
-        print(convCount,64)
+        print(convCount,convList[convCount])
 
         self.bn1 = nn.BatchNorm2d(64)
 
-        self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
-        self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
+        self.layer1 = self._make_layer(block, convList[convCount], num_blocks[0], stride=1)
+        self.layer2 = self._make_layer(block, convList[convCount], num_blocks[1], stride=2)
+        self.layer3 = self._make_layer(block, convList[convCount], num_blocks[2], stride=2)
+        self.layer4 = self._make_layer(block, convList[convCount], num_blocks[3], stride=2)
         self.linear = nn.Linear(512*block.expansion, num_classes)
 
     def _make_layer(self, block, planes, num_blocks, stride):
