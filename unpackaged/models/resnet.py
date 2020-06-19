@@ -140,7 +140,6 @@ class ResNet(nn.Module):
         layers = []
         for stride in strides:
             layers.append(block(self.in_planes, planes, stride))
-            print(block.expansion)
             self.in_planes = convList[convCount] * block.expansion
         return nn.Sequential(*layers)
 
