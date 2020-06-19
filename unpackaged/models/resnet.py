@@ -105,6 +105,7 @@ class Bottleneck(nn.Module):
 
 class ResNet(nn.Module):
     def __init__(self, block, num_blocks, num_classes=10):
+        global convCount
         super(ResNet, self).__init__()
 
         self.index_info_conv = []
@@ -113,7 +114,7 @@ class ResNet(nn.Module):
         self.conv1 = nn.Conv2d(3, convList[convCount], kernel_size=3,
                                stride=1, padding=1, bias=False)
 
-        global convCount
+
         convCount+=1
         print(convCount,convList[convCount])
 
