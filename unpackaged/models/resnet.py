@@ -104,7 +104,8 @@ class ResNet(nn.Module):
         self.in_planes = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3,
                                stride=1, padding=1, bias=False)
-        print(convCount+=1,64)
+        convCount+=1
+        print(convCount,64)
 
         self.bn1 = nn.BatchNorm2d(64)
 
