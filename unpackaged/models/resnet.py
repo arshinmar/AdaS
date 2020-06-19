@@ -38,33 +38,34 @@ convCount=0
 convList=[52,54,54,54,54,54,54,106,108,104,108,106,108,106,106,106,212,214,208,212,210,212,210,212,210,212,210,212,208,420,418,414,416,412,414,412]
 
 class BasicBlock(nn.Module):
+    global convCount
+    global convList
     expansion = 1
-
     def __init__(self, in_planes, planes, stride=1):
         super(BasicBlock, self).__init__()
         self.conv1 = nn.Conv2d(
-            in_planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
-        global convCount
-        print(convCount,planes)
+            in_planes, convList[convCount], kernel_size=3, stride=stride, padding=1, bias=False)
+        #global convCount
+        print(convCount,convList[convCount])
         convCount+=1
 
-        self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3,
+        self.bn1 = nn.BatchNorm2d(convList[convCount])
+        self.conv2 = nn.Conv2d(convList[convCount], convList[convCount], kernel_size=3,
                                stride=1, padding=1, bias=False)
 
-        print(convCount,planes)
+        print(convCount,convList[convCount])
         convCount+=1
 
-        self.bn2 = nn.BatchNorm2d(planes)
+        self.bn2 = nn.BatchNorm2d(convList[convCount])
 
         self.shortcut = nn.Sequential()
-        if stride != 1 or in_planes != self.expansion*planes:
+        if stride != 1 or in_planes != self.expansion*convList[convCount]:
             self.shortcut = nn.Sequential(
-                nn.Conv2d(in_planes, self.expansion*planes,
+                nn.Conv2d(in_planes, self.expansion*convList[convCount],
                           kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm2d(self.expansion*planes)
+                nn.BatchNorm2d(self.expansion*convList[convCount])
             )
-            print(convCount,planes)
+            print(convCount,convList[convCount]
             convCount+=1
 
 
