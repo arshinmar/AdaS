@@ -49,7 +49,6 @@ class BasicBlock(nn.Module):
         self.bn1 = nn.BatchNorm2d(planes)
         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3,
                                stride=1, padding=1, bias=False)
-        global convCount
         convCount+=1
         print(convCount,planes)
         self.bn2 = nn.BatchNorm2d(planes)
