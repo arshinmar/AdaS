@@ -45,13 +45,16 @@ class BasicBlock(nn.Module):
         self.conv1 = nn.Conv2d(
             in_planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
         global convCount
-        convCount+=1
         print(convCount,planes)
+        convCount+=1
+
         self.bn1 = nn.BatchNorm2d(planes)
         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3,
                                stride=1, padding=1, bias=False)
-        convCount+=1
+
         print(convCount,planes)
+        convCount+=1
+
         self.bn2 = nn.BatchNorm2d(planes)
 
         self.shortcut = nn.Sequential()
@@ -61,8 +64,9 @@ class BasicBlock(nn.Module):
                           kernel_size=1, stride=stride, bias=False),
                 nn.BatchNorm2d(self.expansion*planes)
             )
-            convCount+=1
             print(convCount,planes)
+            convCount+=1
+
 
     def forward(self, x):
         out = F.relu(self.bn1(self.conv1(x)))
@@ -114,9 +118,9 @@ class ResNet(nn.Module):
         self.conv1 = nn.Conv2d(3, convList[convCount], kernel_size=3,
                                stride=1, padding=1, bias=False)
 
-
-        convCount+=1
         print(convCount,convList[convCount])
+        convCount+=1
+
 
         self.bn1 = nn.BatchNorm2d(64)
 
