@@ -58,6 +58,8 @@ class BasicBlock(nn.Module):
 
         self.shortcut = nn.Sequential()
         if stride != 1 or in_planes != self.expansion*convList[convCount]:
+            print('case',in_planes)
+            print('case',convList[convCount])
             self.shortcut = nn.Sequential(
                 nn.Conv2d(in_planes, self.expansion*convList[convCount],
                           kernel_size=1, stride=stride, bias=False),
