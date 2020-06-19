@@ -134,12 +134,14 @@ class ResNet(nn.Module):
         self.linear = nn.Linear(512*block.expansion, num_classes)
 
     def _make_layer(self, block, planes, num_blocks, stride):
+        global convList
+        global convCount
         strides = [stride] + [1]*(num_blocks-1)
         layers = []
         for stride in strides:
             layers.append(block(self.in_planes, planes, stride))
             print(block.expansion)
-            self.in_planes = planes * block.expansion
+            self.in_planes = convList[convCount] * block.expansion
         return nn.Sequential(*layers)
 
     def forward(self, x):
