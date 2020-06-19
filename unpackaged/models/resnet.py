@@ -34,7 +34,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-global convCount=0
+convCount=0
 
 class BasicBlock(nn.Module):
     expansion = 1
@@ -104,6 +104,8 @@ class ResNet(nn.Module):
         self.in_planes = 64
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3,
                                stride=1, padding=1, bias=False)
+
+        global convCount
         convCount+=1
         print(convCount,64)
 
