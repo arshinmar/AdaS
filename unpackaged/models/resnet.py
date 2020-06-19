@@ -38,10 +38,10 @@ convCount=0
 convList=[52,54,54,54,54,54,54,106,108,104,108,106,108,106,106,106,212,214,208,212,210,212,210,212,210,212,210,212,208,420,418,414,416,412,414,412]
 
 class BasicBlock(nn.Module):
-    global convCount
-    global convList
     expansion = 1
     def __init__(self, in_planes, planes, stride=1):
+        global convCount
+        global convList
         super(BasicBlock, self).__init__()
         self.conv1 = nn.Conv2d(
             in_planes, convList[convCount], kernel_size=3, stride=stride, padding=1, bias=False)
