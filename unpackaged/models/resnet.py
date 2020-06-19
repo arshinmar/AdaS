@@ -36,6 +36,7 @@ import numpy as np
 
 convCount=0
 convList=[52,54,54,54,54,54,54,106,108,104,108,106,108,106,106,106,212,214,208,212,210,212,210,212,210,212,210,212,208,420,418,414,416,412,414,412,8,8,8,8,8,8,8,8,8,8,8,8,8,8,10,10]
+convList=[52,52,54,54,54,54,54,54,106,108,104,108,106,108,106,106,106,212,214,208,212,210,212,210,212,210,212,210,212,208,420,418,414,416,412,414,412,8,8,8,8,8,8,8,8,8,8,8,8,8,8,10,10]
 
 class BasicBlock(nn.Module):
     expansion = 1
@@ -137,11 +138,13 @@ class ResNet(nn.Module):
         layers = []
         for stride in strides:
             layers.append(block(self.in_planes, planes, stride))
+            print(block.expansion)
             self.in_planes = planes * block.expansion
         return nn.Sequential(*layers)
 
     def forward(self, x):
         out = F.relu(self.bn1(self.conv1(x)))
+        #out.shape=(52,whatever,whatever)
         out = self.layer1(out)
         out = self.layer2(out)
         out = self.layer3(out)
