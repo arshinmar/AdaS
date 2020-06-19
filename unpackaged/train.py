@@ -383,6 +383,7 @@ def epoch_iteration(train_loader, epoch: int,
                                str(epoch)] = lrmetrics.r_conv
     return train_loss / (batch_idx + 1), 100. * correct / total
 
+    print(performance_statistics)
 
 if __name__ == "__main__":
     parser = ArgumentParser(description=__doc__)
