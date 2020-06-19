@@ -65,7 +65,7 @@ class BasicBlock(nn.Module):
                           kernel_size=1, stride=stride, bias=False),
                 nn.BatchNorm2d(self.expansion*convList[convCount])
             )
-            print(convCount,convList[convCount]
+            print(convCount,convList[convCount])
             convCount+=1
 
 
