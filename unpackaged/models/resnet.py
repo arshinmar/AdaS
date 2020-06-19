@@ -34,7 +34,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-convCount=0
+global convCount=0
 
 class BasicBlock(nn.Module):
     expansion = 1
