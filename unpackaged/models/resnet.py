@@ -118,6 +118,7 @@ class ResNet(nn.Module):
         self.index_info_conv = []
 
         self.in_planes = convList[convCount]
+        print('self.in_planes:',self.in_planes)
         self.conv1 = nn.Conv2d(3, convList[convCount], kernel_size=3,
                                stride=1, padding=1, bias=False)
 
