@@ -60,6 +60,7 @@ class BasicBlock(nn.Module):
         if stride != 1 or in_planes != self.expansion*convList[convCount]:
             #print('case',in_planes)
             #print('case',convList[convCount])
+            print('shortcut')
             self.shortcut = nn.Sequential(
                 nn.Conv2d(in_planes, self.expansion*convList[convCount],
                           kernel_size=1, stride=stride, bias=False),
@@ -70,7 +71,7 @@ class BasicBlock(nn.Module):
 
 
     def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x))
+        out = F.relu(self.bn1(self.conv1(x)))
         out = self.bn2(self.conv2(out))
         out += self.shortcut(x)
         out = F.relu(out)
