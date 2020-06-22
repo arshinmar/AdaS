@@ -206,7 +206,7 @@ def ResNet152(img_channel=3, num_classes=1000):
 
 #This function is used to test whether or not the ResNet class works as intended.
 def test():
-    net = ResNet50()
+    net = ResNet101()
     x=torch.randn(2,3,224,224)
     y=net(x).to("cuda")
     print(y.size())
