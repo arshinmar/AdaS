@@ -112,7 +112,7 @@ class BasicBlock(nn.Module):
         out = self.relu(out)
         out = self.bn2(self.conv2(out))
         #print(out.shape,'post conv2 block')
-        if self.shortcut!=nn.Sequential():
+        #if self.shortcut!=nn.Sequential():
             #print('shortcut_made')
         out += self.shortcut(x)
         #print(out.shape,'post conv3 block')
