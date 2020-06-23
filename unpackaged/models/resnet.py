@@ -135,7 +135,7 @@ class ResNet(nn.Module):
         self.conv1 = nn.Conv2d(3, self.index[0], kernel_size=7, stride=2, padding=3)
         self.bn1 = nn.BatchNorm2d(64)
         #self.block1=self._make_block(block,self.index[0],self.index[1],self.index[2],stride=1)
-        self.network=self._create_network(BasicBlock)
+        self.network=self._create_network(block)
         self.linear=nn.Linear(self.index[len(self.index)-1],num_classes)
         self.avgpool = nn.AdaptiveAvgPool2d(1)
         self.maxpool=nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
