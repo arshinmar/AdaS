@@ -207,7 +207,9 @@ def ResNet152(img_channel=3, num_classes=1000):
 def test():
     net = ResNet152()
     x=torch.randn(2,3,224,224)
+    print('x vector')
     y=net(x).to("cuda")
+    print('y vector')
     print(y)
     print(y.size())
 
