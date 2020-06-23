@@ -169,6 +169,7 @@ class ResNet(nn.Module):
         #If the input size is changed (e.g. 56x56 -> 28x28) or number of channels is changed, the identity or skip connection needs to be adapted using the below convolution. A batch normalization is also performed.
         #This is so that it is able to be added in the subsequent layers.
         if stride != 1 or self.in_channels != out_channels * 4:
+            print ('shortcut')
             identity_downsample = nn.Sequential(
                 nn.Conv2d(
                     self.in_channels,
@@ -207,11 +208,7 @@ def ResNet152(img_channel=3, num_classes=1000):
 def test():
     net = ResNet152()
     x=torch.randn(2,3,224,224)
-    print('x vector')
-    print(x)
-    y=net(x).to("cuda")
-    print('y vector')
-    print(y)
+    y=net(x)
     print(y.size())
 
 test()
