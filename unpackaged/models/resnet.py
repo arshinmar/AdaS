@@ -45,7 +45,7 @@ class BasicBlock(nn.Module):
 
         super(BasicBlock,self).__init__()
         if in_planes!=intermediate_planes:
-            print('shortcut_needed')
+            ##print('shortcut_needed')
             stride=2
         else:
             stride=stride
@@ -70,7 +70,7 @@ class BasicBlock(nn.Module):
         self.relu=nn.ReLU()
         self.shortcut=nn.Sequential()
         if stride!=1 or in_planes!=out_planes:
-            #print('shortcut_made')
+            ##print('shortcut_made')
             self.shortcut=nn.Sequential(
                 nn.Conv2d(
                         in_planes,
@@ -107,15 +107,15 @@ class BasicBlock(nn.Module):
                 nn.ReLU()
             )
         out = self.conv1(x)
-        print(out.shape,'post conv1 block')
+        #print(out.shape,'post conv1 block')
         out = self.bn1(out)
         out = self.relu(out)
         out = self.bn2(self.conv2(out))
-        print(out.shape,'post conv2 block')
+        #print(out.shape,'post conv2 block')
         if self.shortcut!=nn.Sequential():
-            print('shortcut_made')
+            #print('shortcut_made')
         out += self.shortcut(x)
-        print(out.shape,'post conv3 block')
+        #print(out.shape,'post conv3 block')
         out = self.relu(out)
         return out
 
@@ -126,7 +126,7 @@ class ResNet(nn.Module):
         global convCount
         super(ResNet, self).__init__()
 
-        self.index = [64, 64, 96, 96, 108, 108, 128, 128, 140, 140, 150, 150, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 512, 512, 512, 512, 512, 512]
+        self.index = [52, 54, 54, 54, 54, 54, 54, 106, 108, 104, 108, 106, 108, 106, 106, 106, 212, 214, 208, 212, 210, 212, 210, 212, 210, 212, 210, 212, 208, 420, 418, 414, 416, 412, 414, 412]
         self.index_temp=self.index
         #self.index_temp=[64, 64, 64, 64, 64, 64, 128, 128, 128, 128, 128, 128, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 512, 512, 512, 512, 512, 512]
         self.index=self.index_temp
@@ -144,7 +144,7 @@ class ResNet(nn.Module):
         layers=[]
         layers.append(block(self.index[0],self.index[1],self.index[2],stride=1))
         for i in range(2,len(self.index)-2,2):
-            print(self.index[i],self.index[i+1],self.index[i+2],'for loop ',i)
+            #print(self.index[i],self.index[i+1],self.index[i+2],'for loop ',i)
             if self.index[i]!=self.index[i+2]:
                 stride=2
             else:
@@ -168,23 +168,23 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)'''
 
     def forward(self, x):
-        print(self.index)
+        #print(self.index)
         out = self.conv1(x)
-        print(out.shape, 'conv1')
+        #print(out.shape, 'conv1')
         out = self.bn1(out)
-        print(out.shape, 'bn1')
+        #print(out.shape, 'bn1')
         out = self.relu(out)
-        print(out.shape, 'relu')
+        #print(out.shape, 'relu')
         out = self.maxpool(out)
-        print(out.shape, 'maxpool')
+        #print(out.shape, 'maxpool')
         out = self.network(out)
-        print(out.shape, 'post bunch of blocks')
+        #print(out.shape, 'post bunch of blocks')
         out = self.avgpool(out)
-        print(out.shape, 'post avgpool')
+        #print(out.shape, 'post avgpool')
         out = out.view(out.size(0), -1)
-        print(out.shape, 'post reshaping')
+        #print(out.shape, 'post reshaping')
         out = self.linear(out)
-        print(out.shape, 'post fc')
+        #print(out.shape, 'post fc')
         return out
 
 
@@ -211,6 +211,6 @@ def ResNet152(num_classes: int = 10):
 def test():
     net = ResNet34()
     y = net(torch.randn(1, 3, 224, 224))
-    print(y.size())
+    #print(y.size())
 
 test()
