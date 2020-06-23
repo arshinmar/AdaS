@@ -44,11 +44,11 @@ class BasicBlock(nn.Module):
         self.out_planes=out_planes
 
         super(BasicBlock,self).__init__()
-        if in_planes!=intermediate_planes:
+        '''if in_planes!=intermediate_planes:
             #print('shortcut_needed')
             stride=2
         else:
-            stride=stride
+            stride=stride'''
         self.conv1=nn.Conv2d(
                 in_planes,
                 intermediate_planes,
@@ -126,33 +126,44 @@ class ResNet(nn.Module):
     def __init__(self, block, image_channels,num_classes=10):
         super(ResNet, self).__init__()
 
-        self.index  = [64, 64, 96, 96, 108, 108, 128, 128, 140, 140, 150, 150, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 512, 512, 512, 512, 512, 512]
-        #self.index = [52, 54, 54, 54, 54, 54, 54, 106, 108, 104, 108, 106, 108, 106, 106, 106, 212, 214, 208, 212, 210, 212, 210, 212, 210, 212, 210, 212, 208, 420, 418, 414, 416, 412, 414, 412]
-        self.index_temp=self.index
+        #self.index  = [64, 64, 96, 96, 108, 108, 128, 128, 140, 140, 150, 150, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 512, 512, 512, 512, 512, 512]
+        #self.index = [32, 32, 34, 34, 34, 34, 34, 64, 66, 56, 66, 64, 66, 62, 64, 62, 122, 128, 110, 126, 120, 126, 118, 124, 118, 122, 118, 124, 114, 234, 232, 220, 226, 210, 216, 210]
+        self.index = [32, 22, 24, 22, 22, 22, 24, 42, 46, 32, 44, 42, 46, 42, 44, 40, 78, 84, 60, 82, 76, 84, 72, 80, 72, 78, 72, 78, 66, 142, 140, 122, 132, 110, 118, 108]
+        if len(self.index)%2==0:
+            ##print(self.index)
+            length=len(self.index)-1
+            self.index+=[self.index[length]]
+            ##print(self.index)
+        #self.index_temp=self.index
         #self.index_temp=[64, 64, 64, 64, 64, 64, 128, 128, 128, 128, 128, 128, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 512, 512, 512, 512, 512, 512]
-        self.index =self.index_temp
+        #self.index =self.index_temp
+        self.num_classes=num_classes
         #self.in_planes = 64
         self.conv1 = nn.Conv2d(image_channels, self.index [0], kernel_size=7, stride=2, padding=3)
-        self.bn1 = nn.BatchNorm2d(64)
+        self.bn1 = nn.BatchNorm2d(self.index[0])
         #self.block1=self._make_block(block,self.index [0],self.index [1],self.index [2],stride=1)
         self.network=self._create_network(block)
-        self.linear=nn.Linear(self.index [len(self.index )-1],num_classes)
+        self.linear=nn.Linear(self.index[len(self.index )-1],num_classes)
         self.avgpool = nn.AdaptiveAvgPool2d(1)
         self.maxpool=nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.relu=nn.ReLU()
 
     def _create_network(self,block):
-        input_size=56
+        output_size=56
         layers=[]
         layers.append(block(self.index[0],self.index[1],self.index[2],stride=1))
         for i in range(2,len(self.index)-2,2):
             #print(self.index [i],self.index [i+1],self.index [i+2],'for loop ',i)
-            if self.index[i]!=self.index[i+2] and input_size>4:
+            if (self.index[i]!=self.index[i+2] or self.index[i]!=self.index[i+1]) and output_size>4:
                 stride=2
-                input_size=int(input_size/2)
+                output_size=int(output_size/2)
             else:
                 stride=1
+        #    if i==len(self.index)-4:
+            #    self.linear=nn.Linear(self.index[len(self.index)-2],self.num_classes)
             layers.append(block(self.index[i],self.index[i+1],self.index[i+2],stride=stride))
+        #    #print(i, 'i')
+        ##print(len(self.index),'len index')
         return nn.Sequential(*layers)
 
     '''
@@ -213,8 +224,8 @@ def ResNet152(num_classes: int = 10):
 
 def test():
     net = ResNet34()
-    ##print(net)
+    #print(net)
     y = net(torch.randn(1, 3, 224, 224))
-    #print(y.size())
+    print(y.size())
 
-test()
+#test()
