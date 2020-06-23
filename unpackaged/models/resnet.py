@@ -122,7 +122,7 @@ class BasicBlock(nn.Module):
 
 class ResNet(nn.Module):
 
-    def __init__(self, block, image_channels,num_classes=10):
+    def __init__(self, block, layers,num_classes=10):
         global convCount
         super(ResNet, self).__init__()
 
@@ -132,7 +132,7 @@ class ResNet(nn.Module):
         #self.index_temp=[64, 64, 64, 64, 64, 64, 128, 128, 128, 128, 128, 128, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 512, 512, 512, 512, 512, 512]
         self.index=self.index_temp
         #self.in_planes = 64
-        self.conv1 = nn.Conv2d(image_channels, self.index[0], kernel_size=7, stride=2, padding=3)
+        self.conv1 = nn.Conv2d(3 self.index[0], kernel_size=7, stride=2, padding=3)
         self.bn1 = nn.BatchNorm2d(64)
         #self.block1=self._make_block(block,self.index[0],self.index[1],self.index[2],stride=1)
         self.network=self._create_network(BasicBlock)
@@ -193,8 +193,8 @@ def ResNet18(num_classes: int = 10):
     return ResNet(BasicBlock, [2, 2, 2, 2], num_classes=num_classes)
 
 
-def ResNet34(image_channels: int=3, num_classes: int = 10):
-    return ResNet(BasicBlock, image_channels, num_classes=num_classes)
+def ResNet34(num_classes: int = 10):
+    return ResNet(BasicBlock, [3, 4, 6, 3], num_classes=num_classes)
 
 
 def ResNet50(num_classes: int = 10):
