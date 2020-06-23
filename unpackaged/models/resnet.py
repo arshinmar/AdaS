@@ -85,6 +85,7 @@ class BasicBlock(nn.Module):
             )
 
     def forward(self,y):
+        '''
         if x.shape[2]<=4:
             self.conv1=nn.Conv2d(
                     self.in_planes,
@@ -105,7 +106,7 @@ class BasicBlock(nn.Module):
                 ),
                 nn.BatchNorm2d(self.out_planes),
                 nn.ReLU()
-            )
+            )'''
         x = self.conv1(y)
         #print(out.shape,'post conv1 block')
         x = self.bn1(x)
