@@ -208,6 +208,7 @@ def test():
     net = ResNet152()
     x=torch.randn(2,3,224,224)
     print('x vector')
+    print(x)
     y=net(x).to("cuda")
     print('y vector')
     print(y)
