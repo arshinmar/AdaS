@@ -108,16 +108,16 @@ class BasicBlock(nn.Module):
             )
         x = self.conv1(x)
         #print(out.shape,'post conv1 block')
-        x = self.bn1(out)
-        x = self.relu(out)
-        x = self.bn2(self.conv2(out))
+        x = self.bn1(x)
+        x = self.relu(x)
+        x = self.bn2(self.conv2(x))
         #print(out.shape,'post conv2 block')
         #if self.shortcut!=nn.Sequential():
             #print('shortcut_made')
         x += self.shortcut(x)
         #print(out.shape,'post conv3 block')
         x = self.relu(x)
-        return out
+        return x
 
 
 class ResNet(nn.Module):
@@ -170,23 +170,23 @@ class ResNet(nn.Module):
 
     def forward(self, x):
         #print(self.index)
-        out = self.conv1(x)
+        x = self.conv1(x)
         #print(out.shape, 'conv1')
-        out = self.bn1(out)
+        x = self.bn1(x)
         #print(out.shape, 'bn1')
-        out = self.relu(out)
+        x = self.relu(x)
         #print(out.shape, 'relu')
-        out = self.maxpool(out)
+        x = self.maxpool(x)
         #print(out.shape, 'maxpool')
-        out = self.network(out)
+        x = self.network(x)
         #print(out.shape, 'post bunch of blocks')
-        out = self.avgpool(out)
+        x = self.avgpool(x)
         #print(out.shape, 'post avgpool')
-        out = out.view(out.size(0), -1)
+        x = out.view(x.size(0), -1)
         #print(out.shape, 'post reshaping')
-        out = self.linear(out)
+        x = self.linear(x)
         #print(out.shape, 'post fc')
-        return out
+        return x
 
 
 def ResNet18(num_classes: int = 10):
