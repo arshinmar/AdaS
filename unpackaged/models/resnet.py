@@ -106,17 +106,17 @@ class BasicBlock(nn.Module):
                 nn.BatchNorm2d(self.out_planes),
                 nn.ReLU()
             )
-        out = self.conv1(x)
+        x = self.conv1(x)
         #print(out.shape,'post conv1 block')
-        out = self.bn1(out)
-        out = self.relu(out)
-        out = self.bn2(self.conv2(out))
+        x = self.bn1(out)
+        x = self.relu(out)
+        x = self.bn2(self.conv2(out))
         #print(out.shape,'post conv2 block')
         #if self.shortcut!=nn.Sequential():
             #print('shortcut_made')
-        out += self.shortcut(x)
+        x += self.shortcut(x)
         #print(out.shape,'post conv3 block')
-        out = self.relu(out)
+        x = self.relu(x)
         return out
 
 
