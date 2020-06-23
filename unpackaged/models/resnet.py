@@ -183,7 +183,7 @@ class ResNet(nn.Module):
         #print(out.shape, 'post bunch of blocks')
         x = self.avgpool(x)
         #print(out.shape, 'post avgpool')
-        x = out.view(x.size(0), -1)
+        x = x.view(x.size(0), -1)
         #print(out.shape, 'post reshaping')
         x = self.linear(x)
         #print(out.shape, 'post fc')
