@@ -9,22 +9,23 @@ import torch.nn as nn
 #This class is responsible for creating the blocks used in the ResNet architecture.
 #It is composed of the init and forward function, both of which are described in the comments above their corresponding functions.
 class block(nn.Module):
+
     #This function is responsible for defining the operations used in the forward pass of ResNet.
-    #The ResNet class instantiates these blocks in the _make_layer function in order to carry out the respective convolutions and batch normalizations for each block.
+    #The ResNet class instantiates these blocks in the _make_layer function in the ResNet class in order to carry out the respective convolutions and batch normalizations for each block.
 
     #This function takes in the following parameters:
 
-    #in_channels: this parameter passes in the size of the input channel. It is important to note that the input channel size is equal in size as the previous output.
+    #in_channels: This parameter passes in the size of the input channel. It is important to note that the input channel size is equal in size to the previous layer's output.
 
-    #out_channels: this parameter passes in the size of the output channel for the convolution operation.
+    #out_channels: This parameter passes in the size of the output channel for the convolution operation.
 
-    #identity_downsample:  A convolution layer which may need  to be performed depending on if the  input size is changed or number of channels.
-    #The purpose for this identity_downsample is to adapt the identity  so it can be added later on after a few convolution layers.
+    #identity_downsample:  A convolution layer which may need to be performed depending on if the input size or number of channels is changed.
+    #The purpose for this identity_downsample is to adapt the identity so it can be added later on after a few convolution layers.
 
-    #stride:This indicates the stride performed in the convolutions. Note that it is default set to 1 meaning that the filters are moved 1 pixel at a time.
-    #However, it is important to realize that at times, a stride of 2 will be passed in from the ResNet class which will essentially cut the output size in half.
-
+    #stride: This indicates the stride performed in the convolutions. Note that it is default set to 1 meaning that the filters are moved 1 pixel at a time.
+    #However, it is important to realize that at times, a stride of 2 will be passed in from the ResNet class which will cut the output size in half.
     def __init__(self, in_channels, out_channels, identity_downsample=None, stride=1):
+        #This line passes the parameters to the constructor of nn.Module.
         super(block, self).__init__()
         self.expansion = 4
         #This assigns the operation for the first convolution in the block. It uses the values for in_channels and out_channels which are passed in from the _make_layer function which initially recieves the values from the init function in the ResNet class.
@@ -67,21 +68,23 @@ class block(nn.Module):
         #This line performs the bn3 operation (as defined in the init function) on x.
         x = self.bn3(x)
 
-        #If the shape of the convolution needs to be changed due to the conditions defined in the comments above the init function (if it is None) then the downsample operation is performed.
-        #Note that the identity_downsample is set to None by default in init. The computation for this conditional is performed in the _make_layer function.
+        #If the shape of the convolution needs to be changed due to the conditions defined in the comments above the init function (if identity_downsample is None) then the downsample operation is performed.
+        #Note that the identity_downsample is set to None by default in init. The computation for this conditional is performed in the _make_layer function in the ResNet class.
         if self.identity_downsample is not None:
             identity = self.identity_downsample(identity)
 
-        #
+        #This line performs the skip connection.
         x += identity
+        #This line performs the relu operation (as defined in the init function) on x.
         x = self.relu(x)
         return x
 
 #The motivation behind the ResNet class and architecture is the skip connections that are introduced within the architecture.
-#These skip connections allow for the network to learn new things, but at the same time never forget the information which was learned before.
-#This retrieval of information means that in theory, the network should never become worse as it becomes deeper which is what in many cases has been observed.
+#These skip connections allow for the network to learn new things, but at the same time not forget the information which was learned before.
+#This retrieval of information means that in theory, the network should not become worse as it becomes deeper, which is what in many cases has been observed.
 class ResNet(nn.Module):
-    #This function is responsible for instianting the ResNet class. There are different types of ResNet, specifically ResNet50, ResNet101, and ResNet152 are the ones defined in this code.
+
+    #This function is responsible for instantiating the ResNet class. There are different types of ResNet, specifically ResNet50, ResNet101, and ResNet152 are the ones defined in this code.
 
     #This function takes in the follwoing parameters:
 
@@ -94,13 +97,13 @@ class ResNet(nn.Module):
 
     #num_classes: The number of classes used for the network. This number depends on the specific architecture that is being defined (ResNet50, ResNet101, ResNet152).
     #Note that this variable is primarily used when creating the fully connected layer.
-
     def __init__(self, block, layers, image_channels, num_classes):
+        #This line passes the parameters to the constructor of nn.Module.
         super(ResNet, self).__init__()
         #This is the input channel for the intial convolution (conv1).
         #Note that in Table 1 of the ResNet paper (row 2), regardless of the type of ResNet, all networks have an input channel size of 64.
         self.in_channels = 64
-        #This is the intial convolution performed for ResNet. As stated above, all networks follow the same convolution regardless of the type of ResNet.
+        #This is the initial convolution performed for ResNet. As stated above, all networks follow the same convolution regardless of the type of ResNet.
         self.conv1 = nn.Conv2d(image_channels, 64, kernel_size=7, stride=2, padding=3)
         #The batch normalization operation is performed with the same reasoning mentioned in earlier convolutions.
         self.bn1 = nn.BatchNorm2d(64)
@@ -128,7 +131,7 @@ class ResNet(nn.Module):
         #Fully connected layer is used to flatten out the layers.
         self.fc = nn.Linear(512 * 4, num_classes)
 
-    #Similar to the forward function used for block, this function peforms the network computations for ResNet as a whole using the assignemnts above.
+    #Similar to the forward function used for the block class, this function peforms the network computations for ResNet as a whole using the assignemnts above.
     def forward(self, x):
         #This line performs the initial conv1 operation (as defined in the init function) on x.
         x = self.conv1(x)
@@ -160,10 +163,10 @@ class ResNet(nn.Module):
     def _make_layer(self, block, num_residual_blocks, out_channels, stride):
         #identity_downsample is intially set to None but its assignment will change based on the computations performed below.
         identity_downsample = None
-        #Layers is intially defined as empty but is populated later in method with the blocks.
+        #Layers is intially defined as empty but is populated later in this method with the blocks.
         layers = []
 
-        #If the  input size is changed (e.g. 56x56 -> 28x28) or number of channels is changed, the identity or skip connection needs to be adapted using the below convolution. A batch normalization is also performed.
+        #If the input size is changed (e.g. 56x56 -> 28x28) or number of channels is changed, the identity or skip connection needs to be adapted using the below convolution. A batch normalization is also performed.
         #This is so that it is able to be added in the subsequent layers.
         if stride != 1 or self.in_channels != out_channels * 4:
             identity_downsample = nn.Sequential(
@@ -182,10 +185,6 @@ class ResNet(nn.Module):
 
         #At the end of the last created block in the intial layer, the output channel is expanded by a factor of 4 (with conv3) so this line changes the size of the in_channels by also increasing it by a factor of 4.
         self.in_channels = out_channels * 4
-
-        # For example for first resnet layer: 256 will be mapped to 64 as intermediate layer,
-        # then finally back to 256. Hence no identity downsample is needed, since stride = 1,
-        # and also same amount of channels.
 
         #This part of the code is responsible for simply appending each block that composes the layer to the overall layer.
         #The for loop runs for the number of residual blocks as specified by each index in the the layers array which was initially passed in to the definition functions for each type of ResNet (the functions below).
@@ -209,6 +208,7 @@ def test():
     net = ResNet152()
     x=torch.randn(2,3,224,224)
     y=net(x).to("cuda")
+    print(y)
     print(y.size())
 
 test()
