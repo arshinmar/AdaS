@@ -33,6 +33,16 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
+from torch.autograd import Variable
+from torchviz import make_dot, make_dot_from_trace
+
+from graphviz import Digraph
+import re
+import torch
+import torch.nn.functional as F
+from torch.autograd import Variable
+from torch.autograd import Variable
+import torchvision.models as models
 
 convCount=0
 
@@ -75,49 +85,30 @@ class BasicBlock(nn.Module):
                 nn.Conv2d(
                         in_planes,
                         out_planes,
-                        kernel_size=3,
+                        kernel_size=1,
                         stride=stride,
-                        padding=1,
                         bias=False
                 ),
                 nn.BatchNorm2d(out_planes),
-                nn.ReLU()
+                #nn.ReLU()
             )
 
     def forward(self,y):
-        '''if x.shape[2]<=4:
-            self.conv1=nn.Conv2d(
-                    self.in_planes,
-                    self.intermediate_planes,
-                    kernel_size=3,
-                    stride=1,
-                    padding=1,
-                    bias=False
-            )
-            self.shortcut=nn.Sequential(
-                nn.Conv2d(
-                        self.in_planes,
-                        self.out_planes,
-                        kernel_size=3,
-                        stride=1,
-                        padding=1,
-                        bias=False
-                ),
-                nn.BatchNorm2d(self.out_planes),
-                nn.ReLU()
-            )'''
         x = self.conv1(y)
         #print(x.shape,'post conv1 block')
         x = self.bn1(x)
-        x = self.relu(x)
+        x = F.relu(x)
         x = self.bn2(self.conv2(x))
         #print(x.shape,'post conv2 block')
         #if self.shortcut!=nn.Sequential():
             #print('shortcut_made')
         #print(self.shortcut)
+        #print(x.shape)
+        #print(y.shape)
+        #print(self.shortcut(y).shape)
         x += self.shortcut(y)
         #print(x.shape,'post conv3 block')
-        x = self.relu(x)
+        x = F.relu(x)
         return x
 
 
@@ -126,22 +117,39 @@ class ResNet(nn.Module):
     def __init__(self, block, image_channels,num_classes=10):
         super(ResNet, self).__init__()
 
-        #self.index  = [64, 64, 96, 96, 108, 108, 128, 128, 140, 140, 150, 150, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 512, 512, 512, 512, 512, 512]
-        #self.index = [32, 32, 34, 34, 34, 34, 34, 64, 66, 56, 66, 64, 66, 62, 64, 62, 122, 128, 110, 126, 120, 126, 118, 124, 118, 122, 118, 124, 114, 234, 232, 220, 226, 210, 216, 210]
-        self.index = [32, 22, 24, 22, 22, 22, 24, 42, 46, 32, 44, 42, 46, 42, 44, 40, 78, 84, 60, 82, 76, 84, 72, 80, 72, 78, 72, 78, 66, 142, 140, 122, 132, 110, 118, 108]
-        if len(self.index)%2==0:
-            ##print(self.index)
-            length=len(self.index)-1
-            self.index+=[self.index[length]]
-            ##print(self.index)
-        #self.index_temp=self.index
-        #self.index_temp=[64, 64, 64, 64, 64, 64, 128, 128, 128, 128, 128, 128, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 512, 512, 512, 512, 512, 512]
-        #self.index =self.index_temp
+        ################################################################################## SGD StepLR ##################################################################################
+
+        ####################### O% ########################
+        #self.index=[64, 64, 64, 64, 64, 64, 64, 128, 128, 128, 128, 128, 128, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 512, 512, 512, 512, 512, 512]
+        ####################### 20% #######################
+        #self.index=[52, 54, 54, 54, 54, 54, 54, 108, 104, 108, 106, 108, 106, 108, 106, 214, 206, 212, 210, 212, 210, 212, 210, 212, 210, 210, 208, 414, 412, 412, 412, 412, 412]
+        ####################### 40% #######################
+        #self.index=[40, 42, 44, 44, 44, 44, 44, 86, 80, 86, 84, 88, 84, 88, 84, 170, 158, 170, 164, 168, 164, 170, 164, 168, 162, 166, 160, 314, 312, 312, 310, 314, 312]
+        ####################### 60% #######################
+        self.index=[32, 32, 34, 34, 34, 32, 34, 66, 56, 66, 62, 68, 62, 68, 62, 128, 108, 126, 118, 126, 118, 126, 118, 124, 116, 120, 112, 216, 210, 212, 210, 214, 210]
+        ####################### 80% #######################
+        #self.index=[32, 22, 24, 24, 24, 22, 26, 44, 32, 44, 40, 48, 40, 48, 40, 84, 60, 82, 72, 82, 72, 84, 70, 80, 70, 74, 62, 118, 110, 112, 108, 114, 110]
+        ####################### 100% #######################
+        #self.index=[32, 10, 14, 12, 14, 12, 16, 24, 8, 24, 18, 28, 18, 26, 18, 42, 10, 40, 26, 38, 26, 40, 24, 36, 22, 30, 14, 20, 10, 12, 8, 16, 10]
+
+        ##################################################################################    AdaS    ##################################################################################
+
+        ####################### O% ########################
+        #self.index=[64, 64, 64, 64, 64, 64, 64, 128, 128, 128, 128, 128, 128, 128, 128, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 512, 512, 512, 512, 512, 512]
+        ####################### 20% #######################
+        #self.index=[52, 54, 54, 54, 54, 54, 54, 108, 104, 108, 106, 108, 106, 106, 106, 214, 208, 212, 210, 212, 210, 212, 210, 212, 210, 212, 208, 418, 414, 416, 412, 414, 412]
+        ####################### 40% #######################
+        #self.index=[42, 44, 44, 44, 44, 44, 44, 86, 80, 86, 84, 86, 84, 86, 84, 170, 158, 170, 166, 170, 164, 168, 164, 168, 164, 168, 160, 326, 318, 322, 310, 316, 310]
+        ####################### 60% #######################
+        #self.index=[32, 32, 34, 34, 34, 34, 34, 66, 56, 66, 64, 66, 62, 64, 62, 128, 110, 126, 120, 126, 118, 124, 118, 122, 118, 124, 114, 232, 220, 226, 210, 216, 210]
+        ####################### 80% #######################
+        #self.index=[32, 22, 24, 22, 22, 22, 24, 46, 32, 44, 42, 46, 42, 44, 40, 84, 60, 82, 76, 84, 72, 80, 72, 78, 72, 78, 66, 140, 122, 132, 110, 118, 108]
+        ####################### 100% #######################
+        #self.index=[32, 12, 14, 12, 12, 12, 14, 24, 8, 24, 20, 24, 20, 22, 18, 42, 12, 38, 30, 40, 26, 36, 26, 34, 26, 34, 18, 46, 24, 36, 10, 20, 8]
+
         self.num_classes=num_classes
-        #self.in_planes = 64
-        self.conv1 = nn.Conv2d(image_channels, self.index [0], kernel_size=7, stride=2, padding=3)
+        self.conv1 = nn.Conv2d(image_channels, self.index [0], kernel_size=3, stride=1, padding=1)
         self.bn1 = nn.BatchNorm2d(self.index[0])
-        #self.block1=self._make_block(block,self.index [0],self.index [1],self.index [2],stride=1)
         self.network=self._create_network(block)
         self.linear=nn.Linear(self.index[len(self.index )-1],num_classes)
         self.avgpool = nn.AdaptiveAvgPool2d(1)
@@ -163,7 +171,7 @@ class ResNet(nn.Module):
             #    self.linear=nn.Linear(self.index[len(self.index)-2],self.num_classes)
             layers.append(block(self.index[i],self.index[i+1],self.index[i+2],stride=stride))
         #    #print(i, 'i')
-        ##print(len(self.index),'len index')
+        #print(len(self.index),'len index')
         return nn.Sequential(*layers)
 
     '''
@@ -181,16 +189,16 @@ class ResNet(nn.Module):
             self.in_planes = planes * block.ex pansion
         return nn.Sequential(*layers)'''
 
-    def forward(self, x):
+    def forward(self, y):
         #print(self.index )
-        x = self.conv1(x)
+        x = self.conv1(y)
         #print(x.shape, 'conv1')
         x = self.bn1(x)
         #print(x.shape, 'bn1')
-        x = self.relu(x)
+        x = F.relu(x)
         #print(x.shape, 'relu')
-        x = self.maxpool(x)
-        #print(x.shape, 'max pool')
+        #x = self.maxpool(x)
+        ##print(x.shape, 'max pool')
         x = self.network(x)
         #print(x.shape, 'post bunch of blocks')
         x = self.avgpool(x)
@@ -225,7 +233,10 @@ def ResNet152(num_classes: int = 10):
 def test():
     net = ResNet34()
     #print(net)
-    y = net(torch.randn(1, 3, 224, 224))
+    y = net(torch.randn(1, 3, 32, 32))
     print(y.size())
+    g=make_dot(y)
+    g.view()
 
-#test()
+
+test()
