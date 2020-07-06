@@ -110,7 +110,7 @@ class PreActBlock(nn.Module):
 class SENet(nn.Module):
     def __init__(self, block, num_blocks, num_classes=10):
         super(SENet, self).__init__()
-        self.in_planes = 64
+
 
         #######################  O% ########################
         #self.index=[64,128,256,512]
@@ -123,11 +123,12 @@ class SENet(nn.Module):
         ####################### 80% #######################
         #self.index=[40,60,106,126]
         ####################### 100% #######################
-        #self.index=[34,44,70,30]
+        self.index=[34,44,70,30]
 
+        self.in_planes = self.index[0]
         self.conv1 = nn.Conv2d(3, self.index[0], kernel_size=3,
                                stride=1, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(64)
+        self.bn1 = nn.BatchNorm2d(self.index[0])
         self.layer1 = self._make_layer(block, self.index[0], num_blocks[0], stride=1)
         self.layer2 = self._make_layer(block, self.index[1], num_blocks[1], stride=2)
         self.layer3 = self._make_layer(block, self.index[2], num_blocks[2], stride=2)
@@ -172,4 +173,4 @@ def test():
     print(y.size())
 
 
-test()
+#test()
