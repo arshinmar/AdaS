@@ -29,6 +29,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from ptflops import get_model_complexity_info
 
 class BasicBlock(nn.Module):
     def __init__(self, in_planes, planes, stride=1):
@@ -111,14 +112,27 @@ class SENet(nn.Module):
         super(SENet, self).__init__()
         self.in_planes = 64
 
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=3,
+        #######################  O% ########################
+        #self.index=[64,128,256,512]
+        ####################### 20% #######################
+        #self.index=[58,112,218,416]
+        ####################### 40% #######################
+        #self.index=[52,94,182,318]
+        ####################### 60% #######################
+        #self.index=[46,78,144,222]
+        ####################### 80% #######################
+        #self.index=[40,60,106,126]
+        ####################### 100% #######################
+        #self.index=[34,44,70,30]
+
+        self.conv1 = nn.Conv2d(3, self.index[0], kernel_size=3,
                                stride=1, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
-        self.layer1 = self._make_layer(block,  64, num_blocks[0], stride=1)
-        self.layer2 = self._make_layer(block, 128, num_blocks[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
-        self.linear = nn.Linear(512, num_classes)
+        self.layer1 = self._make_layer(block, self.index[0], num_blocks[0], stride=1)
+        self.layer2 = self._make_layer(block, self.index[1], num_blocks[1], stride=2)
+        self.layer3 = self._make_layer(block, self.index[2], num_blocks[2], stride=2)
+        self.layer4 = self._make_layer(block, self.index[3], num_blocks[3], stride=2)
+        self.linear = nn.Linear(self.index[3], num_classes)
 
     def _make_layer(self, block, planes, num_blocks, stride):
         strides = [stride] + [1]*(num_blocks-1)
@@ -146,7 +160,16 @@ def SENet18(num_classes: int = 10):
 
 def test():
     net = SENet18()
-    y = net(torch.randn(1, 3, 32, 32))
+    x = torch.randn(2, 3, 32, 32)
+
+    macs, params = get_model_complexity_info(net, (3,32,32), as_strings=True,
+                                           print_per_layer_stat=True, verbose=True)
+    print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
+    print('{:<30}  {:<8}'.format('Number of parameters: ', params))
+
+
+    y = net(x)
     print(y.size())
 
-# test()
+
+test()
