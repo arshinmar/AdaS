@@ -75,7 +75,7 @@ class GPU:
                     os.environ['systemdrive']
         else:
             nvidia_smi = "%s\\Program Files\\NVIDIA " + "Corporation\\NVSMI\\nvidia-smi.exe"'''
-        nvidia_smi = "Program Files\\NVIDIA " + "Corporation\\NVSMI\\nvidia-smi.exe"
+        nvidia_smi = "C:\\Program Files\\NVIDIA " + "Corporation\\NVSMI\\nvidia-smi.exe"
 
         # Get ID, processing and memory utilization for all GPUs
         try:
