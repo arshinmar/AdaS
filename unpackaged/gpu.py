@@ -64,7 +64,7 @@ class GPU:
             raise ValueError
 
     def update(self) -> None:
-        if platform.system() == "Windows":
+        '''if platform.system() == "Windows":
             # If the platform is Windows and nvidia-smi
             # could not be found from the environment path,
             # try to find it from system drive with default installation path
@@ -74,7 +74,8 @@ class GPU:
                     "Corporation\\NVSMI\\nvidia-smi.exe" % \
                     os.environ['systemdrive']
         else:
-            nvidia_smi = "%s\\Program Files\\NVIDIA " + "Corporation\\NVSMI\\nvidia-smi.exe"
+            nvidia_smi = "%s\\Program Files\\NVIDIA " + "Corporation\\NVSMI\\nvidia-smi.exe"'''
+        nvidia_smi = "%s\\Program Files\\NVIDIA " + "Corporation\\NVSMI\\nvidia-smi.exe"
 
         # Get ID, processing and memory utilization for all GPUs
         try:
