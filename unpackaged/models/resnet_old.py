@@ -175,10 +175,34 @@ def ResNet101(num_classes: int = 10):
 def ResNet152(num_classes: int = 10):
     return ResNet(Bottleneck, [3, 8, 36, 3], num_classes=num_classes)
 
+def test():
+    #writer = SummaryWriter('runs/resnet34_1')
+    net = ResNet34()
+    y = net(torch.randn(1, 3, 32, 32))
+    print(y.size())
 
+    macs, params = get_model_complexity_info(net, (3,32,32), as_strings=True,
+                                           print_per_layer_stat=True, verbose=True)
+    print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
+    print('{:<30}  {:<8}'.format('Number of parameters: ', params))
+
+    #print(net)
+    g=make_dot(y)
+    g.view()
+    '''
+
+    #g.view()
+    torch.save(net.state_dict(),'temp_resnet.onnx')
+    dummy_input = Variable(torch.randn(4, 3, 32, 32))
+    torch.onnx.export(net, dummy_input, "model.onnx")
+    '''
+
+test()
+
+'''
 def test():
     net = ResNet18()
     y = net(torch.randn(1, 3, 32, 32))
     print(y.size())
-
+'''
 #test()

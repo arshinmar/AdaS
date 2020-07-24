@@ -45,6 +45,7 @@ from torch.autograd import Variable
 import torchvision.models as models
 
 import torch.onnx
+from ptflops import get_model_complexity_info
 
 class BasicBlock(nn.Module):
 
@@ -164,15 +165,15 @@ class ResNet(nn.Module):
         self.superblock3_indexes=[142, 164, 168, 164, 174, 164, 174, 164, 172, 164, 170, 164]
         self.superblock4_indexes=[274, 246, 250, 246, 230, 246]'''
         ####################### 80% #######################
-        self.superblock1_indexes=[44, 44, 44, 42, 44, 46, 44]
+        '''self.superblock1_indexes=[44, 44, 44, 42, 44, 46, 44]
         self.superblock2_indexes=[54, 70, 76, 70, 84, 70, 88, 70]
         self.superblock3_indexes=[104, 132, 138, 132, 148, 132, 148, 132, 144, 132, 140, 132]
-        self.superblock4_indexes=[196, 158, 162, 158, 136, 158]
+        self.superblock4_indexes=[196, 158, 162, 158, 136, 158]'''
         ####################### 100% #######################
-        '''self.superblock1_indexes=[38, 38, 38, 36, 38, 40, 38]
+        self.superblock1_indexes=[38, 38, 38, 36, 38, 40, 38]
         self.superblock2_indexes=[36, 54, 62, 54, 74, 54, 76, 54]
         self.superblock3_indexes=[66, 102, 108, 102, 120, 102, 120, 102, 116, 102, 112, 102]
-        self.superblock4_indexes=[116, 70, 74, 70, 42, 70]'''
+        self.superblock4_indexes=[116, 70, 74, 70, 42, 70]
 
         self.index=self.superblock1_indexes+self.superblock2_indexes+self.superblock3_indexes+self.superblock4_indexes
 
@@ -262,14 +263,23 @@ def ResNet152(num_classes: int = 10):
 def test():
     #writer = SummaryWriter('runs/resnet34_1')
     net = ResNet34()
-    print(net)
-    #print(net)
     y = net(torch.randn(1, 3, 32, 32))
     print(y.size())
+
+    macs, params = get_model_complexity_info(net, (3,32,32), as_strings=True,
+                                           print_per_layer_stat=True, verbose=True)
+    print('{:<30}  {:<8}'.format('Computational complexity: ', macs))
+    print('{:<30}  {:<8}'.format('Number of parameters: ', params))
+
+    #print(net)
     g=make_dot(y)
+    g.view()
+    '''
+
     #g.view()
     torch.save(net.state_dict(),'temp_resnet.onnx')
     dummy_input = Variable(torch.randn(4, 3, 32, 32))
     torch.onnx.export(net, dummy_input, "model.onnx")
+    '''
 
-#test()
+test()
